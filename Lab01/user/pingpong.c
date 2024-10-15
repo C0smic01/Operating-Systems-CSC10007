@@ -7,7 +7,12 @@ int main(void)
     pipe(p1);
     pipe(p2);
 
-    if (fork() == 0)
+    if (fork() < 0)
+    {
+        printf("fork error\n");
+        exit(1);
+    }
+    else if (fork() == 0)
     {
         // Child process
         close(p1[1]);  
