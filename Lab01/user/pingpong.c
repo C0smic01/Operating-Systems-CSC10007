@@ -7,6 +7,7 @@ int main(void)
     pipe(p1);
     pipe(p2);
     int temp = fork();
+    char buf[1] = {'a'};
 
     if (temp < 0)
     {
@@ -18,7 +19,6 @@ int main(void)
         // Child process
         close(p1[1]);  
         close(p2[0]);  
-        char buf[1];
 
         if (read(p1[0], buf, 1) != 1)
         {
@@ -31,7 +31,6 @@ int main(void)
             printf("%d: received ping\n", child_pid);  
         }
 
-        buf[0] = 'a'; 
         write(p2[1], buf, 1);
 
         close(p1[0]);  
@@ -42,7 +41,6 @@ int main(void)
         // Parent process
         close(p1[0]);  
         close(p2[1]);  
-        char buf[1] = {'a'};
 
         write(p1[1], buf, 1);
 
