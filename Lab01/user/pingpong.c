@@ -6,18 +6,20 @@ int main(void)
     int p1[2], p2[2];
     pipe(p1);
     pipe(p2);
+    char buf[1] = {'a'};
+    int temp = fork();
 
-    if (fork() < 0)
+    if (temp < 0)
     {
         printf("fork error\n");
         exit(1);
     }
-    else if (fork() == 0)
+
+    else if (temp == 0)
     {
-        // Child process
-        close(p1[1]);  
-        close(p2[0]);  
-        char buf[1];
+        close(p1[1]);
+        close(p2[0]);
+        write(p2[1], buf, 1);
 
         if (read(p1[0], buf, 1) != 1)
         {
@@ -26,23 +28,16 @@ int main(void)
         }
         else
         {
-            int child_pid = getpid();
-            printf("%d: received ping\n", child_pid);  
+            int child = getpid();
+            printf("%d: received ping\n", child);
         }
 
-        buf[0] = 'a'; 
-        write(p2[1], buf, 1);
-
-        close(p1[0]);  
-        close(p2[1]);  
     }
+    
     else
     {
-        // Parent process
-        close(p1[0]);  
-        close(p2[1]);  
-        char buf[1] = {'a'};
-
+        close(p1[0]);
+        close(p2[1]);
         write(p1[1], buf, 1);
 
         if (read(p2[0], buf, 1) != 1)
@@ -52,13 +47,8 @@ int main(void)
         }
         else
         {
-            int parent_pid = getpid();
-            printf("%d: received pong\n", parent_pid);  
+            int parent = getpid();
+            printf("%d: received pong\n", parent);
         }
-
-        close(p1[1]); 
-        close(p2[0]);
     }
-
-    exit(0);
 }
