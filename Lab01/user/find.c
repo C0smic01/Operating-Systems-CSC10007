@@ -8,12 +8,13 @@ char* fmtname(char *path)
     static char buf[DIRSIZ+1];
     char *p;
 
-    for(p=path+strlen(path); p >= path && *p != '/'; p--)
+    for(p = path + strlen(path); p >= path && *p != '/'; p--)
     ;
     p++;
 
     if(strlen(p) >= DIRSIZ)
     return p;
+    
     memmove(buf, p, strlen(p));
     buf[strlen(p)] = 0; 
     return buf;
@@ -41,6 +42,7 @@ void find(char *path, char *name)
     switch (st.type)
     {
     case T_DEVICE:
+
     case T_FILE:
         if (strcmp(fmtname(path), name) == 0)
         {
@@ -61,9 +63,14 @@ void find(char *path, char *name)
         while(read(fd, &de, sizeof(de)) == sizeof(de))
         {
             if(de.inum == 0)
+            {
                 continue;
+            }  
             if(strcmp(de.name, ".") == 0 || strcmp(de.name, "..") == 0)
+            {
                 continue;
+            }
+
             memmove(p, de.name, DIRSIZ);
             p[DIRSIZ] = 0;
             if(stat(buf, &st) < 0)
